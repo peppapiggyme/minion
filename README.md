@@ -4,7 +4,7 @@
 
 ## Introduction
 
-Minion is a extremely easy python package that performs several popular optimisation algorithms for 
+Minion is a python package that very naively implements several popular optimisation algorithms for 
 finding the local minina of a given multi-dimensional objective function, 
 including:
 
