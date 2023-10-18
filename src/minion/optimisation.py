@@ -3,7 +3,7 @@ Various famous optimisation methods implemented naively in python
 """
 
 import numpy as np
-from src.minion.utils import *
+from minion.utils import *
 
 
 def newton(func, x_init, check=True, gamma=1., diff=1e-5, tol=1e-6, max_iter=100):
@@ -26,7 +26,6 @@ def newton(func, x_init, check=True, gamma=1., diff=1e-5, tol=1e-6, max_iter=100
             break
         x += t
 
-    result.update(k, x, func(x))
     return result, hess
 
 
@@ -45,12 +44,11 @@ def gradient_descent(func, x_init, gamma=1., diff=1e-5, tol=1e-6, max_iter=100):
             break
         x -= gamma * grad
 
-    result.update(k, x, func(x))
     return result
 
 
 def quasi_newton(
-    func, x_init, check=True, beta=1., range=(-1, 1), diff=1e-5, tol=1e-6, max_iter=100
+    func, x_init, check=True, beta=1., alpha=(-1, 1), diff=1e-5, tol=1e-6, max_iter=100
 ):
     """
     Quasi-Newton method (BFGS) 
@@ -76,9 +74,9 @@ def quasi_newton(
         # decide step size according to exact line search
         if np.linalg.norm(p) < tol:
             break
-        alpha = line_search(func, range, x, p, 100)
+        a = line_search(func, alpha, x, p, 100)
         # assert lower.x < upper.x
-        s = alpha * p
+        s = a * p
         x += s.flatten()
         grad_next = finite_diff_gradient(func, x, diff)
         y = grad_next - grad
@@ -89,7 +87,6 @@ def quasi_newton(
         hy = h @ y
         h = h + (hy.T @ y + sTy) / sTy**2 * ssT - (hy @ s.T + s @ hy.T) / sTy
 
-    result.update(k, x, func(x))
     return result, h
 
 

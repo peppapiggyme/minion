@@ -24,3 +24,9 @@ See jupyter notebooks.
 ## See also
 
 [Wikipedia: mathematical optimization](https://en.wikipedia.org/wiki/Mathematical_optimization).
+
+## Todo
+
+- Auto beta for quasi-newton, refer to scipy.
+- Test all methods with more functions
+- Evaluate the speed of each methods.

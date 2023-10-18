@@ -12,7 +12,9 @@ class Log(object):
         self.value = value
 
     def __repr__(self):
-        return f"[{self.step:6d}] x = {self.coord}, val = {self.value}"
+        if isinstance(self.value, np.ndarray):
+            self.value = self.value.item()
+        return f"[{self.step:6d}] x = {self.coord}, val = {self.value:.6f}"
 
 
 class Result(object):
@@ -23,7 +25,7 @@ class Result(object):
         self.error = None
 
     def update(self, step, coord, value):
-        self.history.append(Log(step, coord, value))
+        self.history.append(Log(step, coord.copy(), value))
         self.n_iter = len(self.history)
         self.x = coord
 
@@ -75,13 +77,13 @@ def finite_diff_hessian(func, x, diff):
     return hess
 
 
-def line_search(func, range, x, p, n=100):
+def line_search(func, param_range, x, p, n=100):
     """
     Simple and naive implementation of line searching the minima of `func`,
     given search `range`, coordinate `x`, gradient `p` at `x` and searching
     granularity `n`
     """
-    a = np.linspace(*range, n)
+    a = np.linspace(*param_range, n)
     index = 0
     minima = func(x)
     for i in range(len(a)):
@@ -93,12 +95,11 @@ def line_search(func, range, x, p, n=100):
 
 def init_simplex(x_init, scale=1.0):
     """
-    Initialise simplex for Nelder-Mead as mentioned in 
+    Initialise simplex for Nelder-Mead as mentioned in
     https://en.wikipedia.org/wiki/Nelder%E2%80%93Mead_method
     """
     n = len(x_init)
     simplex = np.zeros((n + 1, x_init.shape[0]), dtype=np.float64)
-    print(simplex.shape)
     simplex[0] = x_init
     for i in range(1, simplex.shape[0]):
         simplex[i] = x_init + scale * np.eye(n, dtype=np.float64)[i - 1]
